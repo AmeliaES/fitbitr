@@ -1,7 +1,7 @@
 # Exploring my FitBit data
 
 ## Aims
-Wanted to analyse my data from my fitbit watch to pracice some different data visualisation techniques.
+Wanted to analyse my data from my fitbit watch to practice some different data visualisation techniques.
 Had an idea to look at how the number of steps I do varies from the time of day and season. eg. Am I less active in winter vs summer, or at certain times of day?
 
 ## Considerations:
@@ -10,17 +10,12 @@ Had an idea to look at how the number of steps I do varies from the time of day 
 
 ## Rough sketch of idea
 
-<center>
-![](sketch.png){width=50%}
-</center>
+![](sketch.png)
 
 ## Plot so far:
 
 Also in [Plots/](Plots/) with code in [Scripts/exploreStepsData.R](Scripts/exploreStepsData.R)
 
-<center>
-![](Plots/StepsPerHourCircular.png){width=70%}
-</center>
-
+![](Plots/StepsPerHourCircular.png)
 
 * Plan to add data on sunrise and sunset to center of plot and colour by day/night time.

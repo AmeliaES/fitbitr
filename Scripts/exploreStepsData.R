@@ -26,6 +26,11 @@ seasonColours <- c("Spring" = "#a0c73e",
                    "Autumn" = "#f5ae2c",
                    "Winter" = "#afd3e3")
 
+# Define colours for the night
+nightColours <- c("night" = "#6f6278",
+                  "dawnDusk" = "#d9b6b8",
+                  "day" = "#f9fade")
+
 # Custom theme with defined colors
 custom_theme <- function() {
   theme_minimal() +
@@ -194,14 +199,14 @@ dataByDay <- dataByDay %>%
                                    month(date) %in% summer ~ "Summer",
                                    month(date) %in% autumn ~ "Autumn",
                                    month(date) %in% winter ~ "Winter"),
-                         levels = c("Spring", "Summer", "Autumn", "Winter")))
+                         levels = c("Spring", "Summer", "Winter", "Autumn")))
 
 dataByHour <- dataByHour %>%
   mutate(season = factor(case_when(month(date) %in% spring ~ "Spring",
                                    month(date) %in% summer ~ "Summer",
                                    month(date) %in% autumn ~ "Autumn",
                                    month(date) %in% winter ~ "Winter"),
-                         levels = c("Spring", "Summer", "Autumn", "Winter")))
+                         levels = c("Spring", "Summer", "Winter", "Autumn")))
 
 
 
@@ -269,29 +274,55 @@ dev.off()
 
 # Restrict to weekend data, as we know this is higher
 png("Plots/StepsPerHourCircularWeekend.png", res = 500, height = 3000, width = 3000)
-print(
+ print(
 dataByHour %>%
   filter(weekend == "Weekend") %>%
   group_by(season,hour) %>%
   summarise(mean = mean(total_steps, na.rm = T)) %>%
-  ggplot(data = ., aes(x = hour, y = mean)) +
-  geom_col(aes(fill = season),  position = "dodge")+
-  scale_fill_manual(values = seasonColours, guide = "none") +
-  # ylim(-2000,1200) + # 1109.988 is the max mean number of steps
+  mutate(daylight = factor(case_when(season == "Spring" & hour %in% c(20:24, 1:5) ~ "night",
+                                     season == "Spring" & hour %in% c(6,19) ~ "dawnDusk",
+                                     season == "Spring" & hour %in% c(7:18) ~ "day",
+                                     season == "Summer" & hour %in% c(21:24,1:4) ~ "night",
+                                     season == "Summer" & hour %in% c(5,20) ~ "dawnDusk",
+                                     season == "Summer" & hour %in% c(6:19) ~ "day",
+                                     season == "Autumn" & hour %in% c(19:24,1:6) ~ "night",
+                                     season == "Autumn" & hour %in% c(7,18) ~ "dawnDusk",
+                                     season == "Autumn" & hour %in% c(8:17) ~ "day",
+                                     season == "Winter" & hour %in% c(18:24,1:7) ~ "night",
+                                     season == "Winter" & hour %in% c(8,17) ~ "dawnDusk",
+                                     season == "Winter" & hour %in% c(9:16) ~ "day",) )) %>%
+  mutate(innerColourValue = -3000) %>%
+  ggplot(data = . ) +
+  geom_col(aes(x = hour, y = mean, fill = season),  position = "dodge")+
+  geom_col(aes(x = hour, y = innerColourValue, fill = daylight, color = daylight) , position = "dodge")+
+  scale_fill_manual(values = c(seasonColours, nightColours) , guide = "none") +
+  scale_color_manual(values = c(seasonColours, nightColours) , guide = "none") +
   theme_minimal() +
   theme(
     axis.text = element_blank(),
-    axis.text.x = element_text(size = 7, color = "grey"),
     axis.title = element_blank(),
     text = element_text(size = 15),
-    plot.caption = element_text( face = "italic")
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    plot.caption = element_text( face = "italic", color = "#aba5ad", lineheight = 0.4),
+    plot.background = element_rect(fill = "#f5f5f2", color = "white"),
+    plot.title = element_text(hjust = 0.5, size = 12, color = "#49374f"),
+    strip.text = element_text(size = 10, color = "#49374f")
   ) +
   labs(fill = "") +
   coord_polar(start = 6.15) +
   facet_wrap(~season) +
   scale_x_continuous(breaks = 1:24, labels = 1:24)+
-  scale_y_continuous(breaks = seq(0,2000, 500), limits = c(-1000,1900)) +
-  labs(caption = "Each circular grid line represents 500 steps")
-)
-dev.off()
+  scale_y_continuous(breaks = seq(0,2000, 500), limits = c(-3000,1900)) +
+  geom_text(aes(x = hour, y = -300, label = hour ), size = 2.5, color = "#aba5ad")+
+  labs(caption = "Each circular grid line represents 500 steps.\n
+       Inner circles represent light levels of day and night.",
+       title = "Average number of steps taken per hour\nacross multiple days in each season")
+ )
+ dev.off()
+
+
+
+
+
 

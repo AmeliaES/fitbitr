@@ -263,7 +263,7 @@ circularSeasonsPlot <- function(data, ylim, title, ylimMinus){
                                        season == "Winter" & hour %in% c(18:24,1:7) ~ "night",
                                        season == "Winter" & hour %in% c(8,17) ~ "dawnDusk",
                                        season == "Winter" & hour %in% c(9:16) ~ "day",) )) %>%
-    mutate(innerColourValue = ylimMinus) %>%
+    mutate(innerColourValue = ylimMinus+70) %>%
     ggplot(data = . ) +
     geom_col(aes(x = hour, y = mean, fill = season),  position = "dodge")+
     geom_col(aes(x = hour, y = innerColourValue, fill = daylight, color = daylight) , position = "dodge")+

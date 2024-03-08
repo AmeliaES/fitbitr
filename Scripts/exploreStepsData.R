@@ -288,7 +288,7 @@ circularSeasonsPlot <- function(data, ylim, title, ylimMinus){
     scale_y_continuous(breaks = seq(0,2000, 500), limits = c(ylimMinus,ylim)) +
     geom_text(aes(x = hour, y = -300, label = hour ), size = 2.5, color = "#aba5ad")+
     labs(caption = "Each circular grid line represents 500 steps.\n
-       Inner circles represent light levels of day and night.",
+       Inner circle represents light levels.",
          title = title)
 }
 
